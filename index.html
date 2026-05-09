@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ÉLUME Hair Studio — Prenota il tuo appuntamento online. Taglio, colore, trattamenti e servizi speciali.">
+<title>ÉLUME Hair Studio — Prenota Online</title>
+<style>
+  :root {
+    --gold: #B8942A;
+    --gold-light: #D4B060;
+    --gold-dark: #8A6E1E;
+    --gold-pale: #F5EDD8;
+    --cream: #FAFAF7;
+    --white: #FFFFFF;
+    --dark: #1A1A1A;
+    --dark2: #2E2E2E;
+    --text: #1A1A1A;
+    --text2: #4A4A40;
+    --text3: #8A8A80;
+    --border: #E8E8E0;
+    --border2: #D8D8CC;
+    --success: #3A8A5A;
+    --danger: #C04040;
+    --radius: 14px;
+    --shadow: 0 2px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--cream); color: var(--text); line-height: 1.6; }
+
+  /* ---- HEADER ---- */
+  header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(250,250,247,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .header-inner { max-width: 900px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 22px; font-weight: 800; letter-spacing: 0.14em; background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .logo-sub { font-size: 9px; color: var(--text3); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 1px; }
+  .btn-prenota-header { padding: 10px 22px; background: var(--gold); color: #fff; border: none; border-radius: 24px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.04em; text-decoration: none; display: inline-block; transition: background 0.15s; }
+  .btn-prenota-header:hover { background: var(--gold-dark); }
+
+  /* ---- HERO ---- */
+  .hero { padding: 140px 24px 80px; text-align: center; max-width: 700px; margin: 0 auto; }
+  .hero-eyebrow { font-size: 11px; color: var(--gold); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+  .hero h1 { font-size: clamp(36px, 8vw, 64px); font-weight: 800; letter-spacing: 0.06em; line-height: 1.1; margin-bottom: 20px; background: linear-gradient(135deg, var(--dark) 0%, var(--gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { font-size: 16px; color: var(--text2); max-width: 480px; margin: 0 auto 36px; line-height: 1.7; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { padding: 16px 36px; background: var(--gold); color: #fff; border: none; border-radius: 32px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.15s; box-shadow: 0 4px 20px rgba(184,148,42,0.35); }
+  .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+  .btn-secondary { padding: 16px 36px; background: transparent; color: var(--gold); border: 2px solid var(--gold); border-radius: 32px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.15s; }
+  .btn-secondary:hover { background: var(--gold-pale); }
+
+  /* ---- DIVIDER ---- */
+  .divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); margin: 0 auto 40px; border-radius: 1px; }
+
+  /* ---- SEZIONE GENERICA ---- */
+  section { padding: 80px 24px; }
+  .section-inner { max-width: 900px; margin: 0 auto; }
+  .section-eyebrow { font-size: 10px; color: var(--gold); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
+  .section-title { font-size: clamp(24px, 5vw, 36px); font-weight: 800; text-align: center; margin-bottom: 12px; color: var(--dark); }
+  .section-sub { font-size: 15px; color: var(--text2); text-align: center; max-width: 500px; margin: 0 auto 48px; }
+
+  /* ---- SERVIZI ---- */
+  #servizi { background: var(--white); }
+  .servizi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0; }
+  .servizi-cat { padding: 32px; border-bottom: 1px solid var(--border); }
+  .servizi-cat:last-child { border-bottom: none; }
+  .cat-nome { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .cat-nome::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .servizio-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .servizio-item:last-child { border-bottom: none; }
+  .serv-nome { font-size: 14px; color: var(--text); font-weight: 500; }
+  .serv-prezzo { font-size: 14px; font-weight: 700; color: var(--gold-dark); }
+
+  /* ---- PRENOTAZIONE ---- */
+  #prenota { background: var(--cream); }
+  .booking-wrap { background: var(--white); border-radius: 20px; box-shadow: var(--shadow-lg); overflow: hidden; }
+
+  /* Week navigation */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .cal-nav-btn { background: var(--cream); border: 1px solid var(--border); color: var(--text2); border-radius: 10px; padding: 8px 16px; font-size: 18px; cursor: pointer; transition: all 0.15s; }
+  .cal-nav-btn:hover { background: var(--gold-pale); border-color: var(--gold); color: var(--gold); }
+  .cal-week-label { font-size: 15px; font-weight: 700; color: var(--dark); text-align: center; }
+  .cal-week-range { display: block; font-size: 12px; color: var(--text3); font-weight: 400; margin-top: 2px; }
+
+  /* Week strip */
+  .week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .week-day { background: var(--cream); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 4px; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .week-day:hover:not(.chiuso):not(.passato) { border-color: var(--gold); background: var(--gold-pale); }
+  .week-day.active { background: var(--gold); border-color: var(--gold); }
+  .week-day.today { border-color: var(--gold-light); }
+  .week-day.chiuso { background: #F5F5F0; cursor: not-allowed; opacity: 0.5; }
+  .week-day.passato { opacity: 0.35; cursor: not-allowed; }
+  .wd-name { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .week-day.active .wd-name { color: rgba(255,255,255,0.8); }
+  .wd-num { font-size: 16px; font-weight: 700; color: var(--dark); margin-top: 3px; }
+  .week-day.active .wd-num { color: #fff; }
+  .week-day.chiuso .wd-num { color: var(--text3); }
+  .wd-closed { font-size: 9px; color: var(--text3); margin-top: 3px; }
+
+  /* Time slots */
+  .slots-section { padding: 20px 24px; }
+  .slots-day-label { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 16px; }
+  .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (min-width: 480px) { .slots-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 640px) { .slots-grid { grid-template-columns: repeat(6, 1fr); } }
+  .slot-btn { padding: 12px 6px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.15s; border: 1.5px solid; }
+  .slot-btn.libero { background: var(--cream); border-color: var(--border); color: var(--text); }
+  .slot-btn.libero:hover { background: var(--gold-pale); border-color: var(--gold); color: var(--gold-dark); }
+  .slot-btn.occupato { background: #F0F0EC; border-color: var(--border); color: var(--text3); cursor: not-allowed; font-size: 11px; }
+  .slot-btn.chiuso-slot { background: #F5F5F0; border-color: var(--border); color: var(--text3); cursor: not-allowed; font-size: 11px; }
+  .slot-loading { text-align: center; padding: 32px; color: var(--text3); font-size: 14px; }
+  .pausa-label { grid-column: 1/-1; text-align: center; font-size: 11px; color: var(--text3); padding: 8px 0; letter-spacing: 0.06em; text-transform: uppercase; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 4px 0; }
+
+  /* ---- FORM PRENOTAZIONE ---- */
+  .booking-form { padding: 24px; border-top: 1px solid var(--border); background: var(--gold-pale); display: none; }
+  .booking-form.show { display: block; }
+  .form-title { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+  .form-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1/-1; }
+  .form-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .form-input { padding: 12px 16px; border: 1.5px solid var(--border2); border-radius: 10px; font-size: 14px; background: var(--white); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .form-input:focus { border-color: var(--gold); }
+  .form-select { padding: 12px 16px; border: 1.5px solid var(--border2); border-radius: 10px; font-size: 14px; background: var(--white); color: var(--text); outline: none; appearance: none; transition: border-color 0.15s; }
+  .form-select:focus { border-color: var(--gold); }
+  .form-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .btn-conferma { flex: 1; padding: 14px; background: var(--gold); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+  .btn-conferma:hover { background: var(--gold-dark); }
+  .btn-annulla-form { padding: 14px 20px; background: transparent; color: var(--text2); border: 1.5px solid var(--border2); border-radius: 12px; font-size: 14px; cursor: pointer; }
+
+  /* ---- SUCCESS ---- */
+  .booking-success { display: none; padding: 40px 24px; text-align: center; }
+  .booking-success.show { display: block; }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-title { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+  .success-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
+  .success-detail { background: var(--cream); border-radius: 14px; padding: 20px; margin-bottom: 24px; border: 1px solid var(--border); text-align: left; }
+  .sd-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .sd-row:last-child { border-bottom: none; }
+  .sd-label { color: var(--text3); }
+  .sd-value { font-weight: 600; color: var(--dark); }
+  .btn-nuova-pren { padding: 14px 32px; background: var(--gold); color: #fff; border: none; border-radius: 32px; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+  /* ---- PERCHÉ NOI ---- */
+  #perche { background: var(--dark); color: #fff; }
+  #perche .section-title { color: #fff; }
+  #perche .section-sub { color: rgba(255,255,255,0.6); }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .feature-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); padding: 28px 24px; }
+  .feature-icon { font-size: 32px; margin-bottom: 14px; }
+  .feature-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .feature-text { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ---- FOOTER ---- */
+  footer { background: var(--dark2); color: rgba(255,255,255,0.5); padding: 40px 24px; text-align: center; }
+  .footer-logo { font-size: 18px; font-weight: 800; letter-spacing: 0.14em; background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+  .footer-sub { font-size: 12px; margin-bottom: 20px; }
+  .footer-info { font-size: 12px; line-height: 2; }
+
+  /* ---- TOAST ---- */
+  #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--dark); color: #fff; border-radius: 20px; padding: 12px 24px; font-size: 13px; opacity: 0; transition: all 0.22s ease; pointer-events: none; white-space: nowrap; z-index: 200; box-shadow: var(--shadow-lg); }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.err { background: var(--danger); }
+
+  /* ---- LOADING OVERLAY ---- */
+  .loading-slots { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 32px; color: var(--text3); font-size: 14px; }
+  .spin { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 600px) {
+    .hero { padding: 120px 20px 60px; }
+    section { padding: 60px 20px; }
+    .servizi-grid { grid-template-columns: 1fr; }
+    .btn-prenota-header { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="logo">ÉLUME</div>
+      <div class="logo-sub">Hair Studio</div>
+    </div>
+    <a href="#prenota" class="btn-prenota-header">Prenota ora</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section style="padding:0">
+  <div class="hero">
+    <div class="hero-eyebrow">✦ Hair Studio dal 2018</div>
+    <h1>L'arte del capello,<br>la cura del dettaglio</h1>
+    <p>Taglio, colore e trattamenti personalizzati in un ambiente elegante e accogliente. Prenota il tuo appuntamento in pochi secondi.</p>
+    <div class="hero-cta">
+      <a href="#prenota" class="btn-primary">Prenota ora</a>
+      <a href="#servizi" class="btn-secondary">Scopri i servizi</a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIZI -->
+<section id="servizi">
+  <div class="section-inner">
+    <div class="section-eyebrow">Il nostro listino</div>
+    <h2 class="section-title">I nostri servizi</h2>
+    <p class="section-sub">Ogni trattamento è pensato per valorizzare la tua unicità</p>
+    <div class="divider"></div>
+    <div class="servizi-grid" id="servizi-grid">
+      <div class="servizi-cat">
+        <div class="cat-nome">Taglio e Styling</div>
+        <div class="servizio-item"><span class="serv-nome">Taglio donna</span><span class="serv-prezzo">da 35 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Taglio uomo</span><span class="serv-prezzo">da 25 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Taglio bambino</span><span class="serv-prezzo">20 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Piega</span><span class="serv-prezzo">da 25 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Styling per eventi</span><span class="serv-prezzo">da 45 €</span></div>
+      </div>
+      <div class="servizi-cat">
+        <div class="cat-nome">Colore e Trattamenti</div>
+        <div class="servizio-item"><span class="serv-nome">Colore completo</span><span class="serv-prezzo">da 60 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Meches / Colpi di sole</span><span class="serv-prezzo">da 70 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Ritocco ricrescita</span><span class="serv-prezzo">da 45 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Trattamento ristrutturante</span><span class="serv-prezzo">da 35 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Maschera nutriente</span><span class="serv-prezzo">25 €</span></div>
+      </div>
+      <div class="servizi-cat">
+        <div class="cat-nome">Servizi Speciali</div>
+        <div class="servizio-item"><span class="serv-nome">Permanente</span><span class="serv-prezzo">da 80 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Stiratura chimica</span><span class="serv-prezzo">da 100 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Extension</span><span class="serv-prezzo">da 150 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Acconciatura sposa</span><span class="serv-prezzo">da 80 €</span></div>
+        <div class="servizio-item"><span class="serv-nome">Consulenza stile</span><span class="serv-prezzo">30 €</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRENOTAZIONE -->
+<section id="prenota">
+  <div class="section-inner">
+    <div class="section-eyebrow">Agenda online</div>
+    <h2 class="section-title">Prenota il tuo appuntamento</h2>
+    <p class="section-sub">Scegli giorno e orario — la disponibilità è aggiornata in tempo reale</p>
+    <div class="divider"></div>
+
+    <div class="booking-wrap">
+      <!-- Navigazione settimana -->
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="cambiaSettimana(-1)">‹</button>
+        <div class="cal-week-label">
+          Seleziona un giorno
+          <span class="cal-week-range" id="cal-week-range"></span>
+        </div>
+        <button class="cal-nav-btn" onclick="cambiaSettimana(1)">›</button>
+      </div>
+
+      <!-- Strip giorni -->
+      <div class="week-strip" id="week-strip"></div>
+
+      <!-- Slot orari -->
+      <div class="slots-section" id="slots-section">
+        <div class="loading-slots"><div class="spin"></div>Caricamento disponibilità...</div>
+      </div>
+
+      <!-- Form prenotazione -->
+      <div class="booking-form" id="booking-form">
+        <div class="form-title" id="form-title">Prenota per</div>
+        <div class="form-subtitle" id="form-subtitle">Completa i tuoi dati</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nome *</label>
+            <input class="form-input" type="text" id="f-nome" placeholder="Es. Maria">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cognome *</label>
+            <input class="form-input" type="text" id="f-cognome" placeholder="Es. Rossi">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefono *</label>
+            <input class="form-input" type="tel" id="f-tel" placeholder="Es. 347 1234567" inputmode="tel">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Servizio</label>
+            <select class="form-select" id="f-servizio">
+              <option value="">Seleziona...</option>
+              <option>Taglio donna</option>
+              <option>Taglio uomo</option>
+              <option>Taglio bambino</option>
+              <option>Piega</option>
+              <option>Styling per eventi</option>
+              <option>Colore completo</option>
+              <option>Meches / Colpi di sole</option>
+              <option>Ritocco ricrescita</option>
+              <option>Trattamento ristrutturante</option>
+              <option>Maschera nutriente</option>
+              <option>Permanente</option>
+              <option>Stiratura chimica</option>
+              <option>Extension</option>
+              <option>Acconciatura sposa</option>
+              <option>Consulenza stile</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Note (opzionale)</label>
+            <input class="form-input" type="text" id="f-note" placeholder="Es. capelli lunghi, allergie, preferenze...">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-annulla-form" onclick="annullaForm()">Annulla</button>
+          <button class="btn-conferma" onclick="inviaPrenotazione()">Conferma prenotazione</button>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="booking-success" id="booking-success">
+        <div class="success-icon">✨</div>
+        <div class="success-title">Prenotazione confermata!</div>
+        <div class="success-sub">Ti aspettiamo da ÉLUME. Riceverai una conferma via SMS al numero indicato.</div>
+        <div class="success-detail" id="success-detail"></div>
+        <button class="btn-nuova-pren" onclick="nuovaPrenotazione()">Fai un'altra prenotazione</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERCHÉ NOI -->
+<section id="perche">
+  <div class="section-inner">
+    <div class="section-eyebrow" style="color:var(--gold-light)">Il nostro approccio</div>
+    <h2 class="section-title">Perché scegliere ÉLUME</h2>
+    <p class="section-sub" style="color:rgba(255,255,255,0.55)">Ogni visita è un'esperienza pensata per te</p>
+    <div class="divider"></div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">✂️</div>
+        <div class="feature-title">Esperienza e precisione</div>
+        <div class="feature-text">Oltre 10 anni di esperienza nel settore. Ogni taglio è studiato sulla forma del viso e sullo stile di vita del cliente.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌿</div>
+        <div class="feature-title">Prodotti di qualità</div>
+        <div class="feature-text">Utilizziamo solo prodotti professionali selezionati, rispettosi dei capelli e della cute.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <div class="feature-title">Prenotazione facile</div>
+        <div class="feature-text">Prenota online in qualsiasi momento, senza telefonate. La disponibilità è sempre aggiornata in tempo reale.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✦</div>
+        <div class="feature-title">Ambiente esclusivo</div>
+        <div class="feature-text">Un salone curato nei dettagli, dove ogni visita diventa un momento di benessere e cura personale.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ÉLUME</div>
+  <div class="footer-sub">Hair Studio</div>
+  <div class="footer-info">
+    Via Roma 42, Milano<br>
+    Tel: 02 1234567<br>
+    Lun–Ven: 9:00–19:00 · Sab: 9:00–17:00<br>
+    Dom e Lun: chiuso
+  </div>
+  <div style="margin-top:24px;font-size:11px;opacity:0.4">© 2025 ÉLUME Hair Studio — Tutti i diritti riservati</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+  // ---- CONFIG ----
+  const MASTER_KEY = '$2a$10$y1KUAmvnehD9qUBS8L4.oePQb4uoVX1vL4vI0VTXdN36sTRKLoqH2';
+  const ACCESS_KEY = '$2a$10$IWpYKf7f5zw97Fztg3dfoeK2.rZXOgt77SA7joMrZnuoEXzArQql6';
+  const BIN_ID     = '69fed779adc21f119a74f135';
+  const BIN_URL    = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+
+  const SLOT_ORARI = [
+    '09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30',
+    '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30'
+  ];
+  const GIORNI_NOMI = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+
+  let datiSalone   = null;
+  let calOffset    = 0;
+  let giornoSel    = null;
+  let slotSel      = null;
+  let oggi         = dateStr(new Date());
+
+  function dateStr(d) { return d.toISOString().split('T')[0]; }
+  function fmtDataLong(ds) {
+    const d = new Date(ds + 'T12:00:00');
+    return d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+
+  let toastTimer;
+  function showToast(msg, tipo) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = tipo === 'err' ? 'show err' : 'show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = ''; }, 3000);
+  }
+
+  // ---- LEGGI DATI ----
+  async function caricaDati() {
+    try {
+      const res  = await fetch(BIN_URL + '/latest', { headers: { 'X-Master-Key': MASTER_KEY, 'X-Access-Key': ACCESS_KEY } });
+      const json = await res.json();
+      datiSalone = json.record || {};
+    } catch(e) {
+      datiSalone = {};
+    }
+  }
+
+  // ---- CHIUSURE ----
+  function isGiornoChiuso(ds) {
+    if (!datiSalone) return false;
+    const ch = datiSalone.chiusure || { giorni_standard: [0, 1], eccezionali: [] };
+    const d   = new Date(ds + 'T12:00:00');
+    if (ch.giorni_standard.includes(d.getDay())) return true;
+    for (const c of (ch.eccezionali || [])) {
+      if ((c.tipo === 'giorno' || c.tipo === 'periodo') && ds >= c.dal && ds <= c.al) return true;
+    }
+    return false;
+  }
+
+  function isFasciaChiusa(ds, fascia) {
+    if (!datiSalone) return false;
+    const ch = datiSalone.chiusure || {};
+    for (const c of (ch.eccezionali || [])) {
+      if (c.tipo === fascia && ds >= c.dal && ds <= c.al) return true;
+    }
+    return false;
+  }
+
+  function isSlotChiuso(ds, ora) {
+    if (isGiornoChiuso(ds)) return true;
+    if (ora < '13:00' && isFasciaChiusa(ds, 'mattina'))    return true;
+    if (ora >= '14:00' && isFasciaChiusa(ds, 'pomeriggio')) return true;
+    return false;
+  }
+
+  function isSlotOccupato(ds, ora) {
+    if (!datiSalone || !datiSalone.appuntamenti) return false;
+    return datiSalone.appuntamenti.some(a => {
+      if (a.data !== ds) return false;
+      const startIdx = SLOT_ORARI.indexOf(a.oraInizio);
+      const slots    = Math.ceil((a.durata || 60) / 30);
+      const oraIdx   = SLOT_ORARI.indexOf(ora);
+      return oraIdx >= startIdx && oraIdx < startIdx + slots;
+    });
+  }
+
+  // ---- CALENDARIO ----
+  function getLunedi(offset) {
+    const d   = new Date();
+    const day = d.getDay();
+    d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day) + offset * 7);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function cambiaSettimana(dir) {
+    // Non permettere di andare nel passato
+    if (dir === -1 && calOffset === 0) return;
+    calOffset += dir;
+    giornoSel = null;
+    slotSel   = null;
+    nascondiform();
+    buildCalendario();
+  }
+
+  function buildCalendario() {
+    const lun = getLunedi(calOffset);
+    const dom = new Date(lun); dom.setDate(dom.getDate() + 6);
+    const opts = { day:'numeric', month:'short' };
+    document.getElementById('cal-week-range').textContent =
+      lun.toLocaleDateString('it-IT', opts) + ' – ' + dom.toLocaleDateString('it-IT', opts);
+
+    // Week strip
+    let stripHtml = '';
+    for (let i = 0; i < 7; i++) {
+      const d  = new Date(lun); d.setDate(d.getDate() + i);
+      const ds = dateStr(d);
+      const isChiuso  = isGiornoChiuso(ds);
+      const isPassato = ds < oggi;
+      const isToday   = ds === oggi;
+      const isSel     = ds === giornoSel;
+      let cls = 'week-day';
+      if (isSel)     cls += ' active';
+      else if (isChiuso)  cls += ' chiuso';
+      else if (isPassato) cls += ' passato';
+      else if (isToday)   cls += ' today';
+      const clickable = !isChiuso && !isPassato;
+      stripHtml += '<div class="' + cls + '" ' + (clickable ? 'onclick="selGiorno(\'' + ds + '\')"' : '') + '>' +
+        '<div class="wd-name">' + GIORNI_NOMI[d.getDay()] + '</div>' +
+        '<div class="wd-num">' + d.getDate() + '</div>' +
+        (isChiuso ? '<div class="wd-closed">chiuso</div>' : '<div style="height:12px"></div>') +
+        '</div>';
+    }
+    document.getElementById('week-strip').innerHTML = stripHtml;
+
+    // Slots
+    if (giornoSel) buildSlots();
+    else document.getElementById('slots-section').innerHTML = '<div class="slot-loading">👆 Seleziona un giorno per vedere gli orari disponibili</div>';
+  }
+
+  function selGiorno(ds) {
+    giornoSel = ds;
+    slotSel   = null;
+    nascondiform();
+    buildCalendario();
+    document.getElementById('prenota').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function buildSlots() {
+    const d       = new Date(giornoSel + 'T12:00:00');
+    const label   = d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long' });
+    const mattina = SLOT_ORARI.filter(s => s < '13:00');
+    const pome    = SLOT_ORARI.filter(s => s >= '14:00');
+    const chiusoMat  = isFasciaChiusa(giornoSel, 'mattina');
+    const chiusoPome = isFasciaChiusa(giornoSel, 'pomeriggio');
+
+    let html = '<div class="slots-day-label">📅 ' + label + '</div><div class="slots-grid">';
+
+    mattina.forEach(ora => { html += buildSlotBtn(ora); });
+    html += '<div class="pausa-label">☕ Pausa pranzo 13:00 – 14:00</div>';
+    pome.forEach(ora => { html += buildSlotBtn(ora); });
+
+    html += '</div>';
+    document.getElementById('slots-section').innerHTML = html;
+  }
+
+  function buildSlotBtn(ora) {
+    const chiuso   = isSlotChiuso(giornoSel, ora);
+    const occupato = !chiuso && isSlotOccupato(giornoSel, ora);
+    if (chiuso)   return '<div class="slot-btn chiuso-slot">Chiuso</div>';
+    if (occupato) return '<div class="slot-btn occupato">Occupato</div>';
+    return '<div class="slot-btn libero" onclick="selSlot(\'' + ora + '\')">' + ora + '</div>';
+  }
+
+  function selSlot(ora) {
+    slotSel = ora;
+    const d = new Date(giornoSel + 'T12:00:00');
+    const dataLabel = d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long' });
+    document.getElementById('form-title').textContent    = '📅 ' + dataLabel + ' alle ' + ora;
+    document.getElementById('form-subtitle').textContent = 'Inserisci i tuoi dati per completare la prenotazione';
+    document.getElementById('booking-form').classList.add('show');
+    document.getElementById('booking-success').classList.remove('show');
+    document.getElementById('booking-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function nascondiform() {
+    document.getElementById('booking-form').classList.remove('show');
+    document.getElementById('booking-success').classList.remove('show');
+  }
+
+  function annullaForm() {
+    slotSel = null;
+    nascondiform();
+  }
+
+  // ---- INVIA PRENOTAZIONE ----
+  async function inviaPrenotazione() {
+    const nome     = document.getElementById('f-nome').value.trim();
+    const cognome  = document.getElementById('f-cognome').value.trim();
+    const tel      = document.getElementById('f-tel').value.trim();
+    const servizio = document.getElementById('f-servizio').value;
+    const note     = document.getElementById('f-note').value.trim();
+
+    if (!nome || !cognome || !tel) { showToast('Compila nome, cognome e telefono', 'err'); return; }
+    if (!giornoSel || !slotSel)    { showToast('Seleziona un giorno e un orario', 'err'); return; }
+
+    const cliente  = nome + ' ' + cognome;
+    const durata   = 60; // default 1h per prenotazioni online
+
+    // Salva appuntamento su JSONbin
+    try {
+      await caricaDati(); // rilegge per avere dati freschi
+      const appuntamenti = datiSalone.appuntamenti || [];
+
+      // Verifica che lo slot sia ancora libero (potrebbe essere stato preso nel frattempo)
+      const ancoraLibero = !isSlotOccupato(giornoSel, slotSel);
+      if (!ancoraLibero) {
+        showToast('Questo slot è stato appena prenotato. Scegline un altro.', 'err');
+        buildSlots();
+        return;
+      }
+
+      const nuovoAppt = {
+        id:         (appuntamenti.length > 0 ? Math.max(...appuntamenti.map(a => a.id)) + 1 : 1),
+        data:       giornoSel,
+        cliente,
+        telefono:   tel,
+        servizio:   servizio || 'Da definire',
+        oraInizio:  slotSel,
+        durata,
+        note,
+        daOnline:   true,
+        creato:     new Date().toISOString()
+      };
+      appuntamenti.push(nuovoAppt);
+      datiSalone.appuntamenti = appuntamenti;
+
+      await fetch(BIN_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY, 'X-Access-Key': ACCESS_KEY },
+        body: JSON.stringify(datiSalone)
+      });
+
+      // Mostra success
+      const d = new Date(giornoSel + 'T12:00:00');
+      const dataLabel = d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('success-detail').innerHTML =
+        '<div class="sd-row"><span class="sd-label">Nome</span><span class="sd-value">' + cliente + '</span></div>' +
+        '<div class="sd-row"><span class="sd-label">Telefono</span><span class="sd-value">' + tel + '</span></div>' +
+        '<div class="sd-row"><span class="sd-label">Data</span><span class="sd-value">' + dataLabel + '</span></div>' +
+        '<div class="sd-row"><span class="sd-label">Orario</span><span class="sd-value">' + slotSel + '</span></div>' +
+        (servizio ? '<div class="sd-row"><span class="sd-label">Servizio</span><span class="sd-value">' + servizio + '</span></div>' : '') +
+        (note ? '<div class="sd-row"><span class="sd-label">Note</span><span class="sd-value">' + note + '</span></div>' : '');
+
+      document.getElementById('booking-form').classList.remove('show');
+      document.getElementById('booking-success').classList.add('show');
+      document.getElementById('booking-success').scrollIntoView({ behavior:'smooth', block:'nearest' });
+
+      // Reset form
+      ['f-nome','f-cognome','f-tel','f-note'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-servizio').value = '';
+
+    } catch(e) {
+      showToast('Errore di connessione. Riprova.', 'err');
+    }
+  }
+
+  function nuovaPrenotazione() {
+    giornoSel = null;
+    slotSel   = null;
+    nascondiform();
+    caricaDati().then(() => buildCalendario());
+    document.getElementById('prenota').scrollIntoView({ behavior:'smooth' });
+  }
+
+  // ---- INIT ----
+  async function init() {
+    await caricaDati();
+    // Seleziona oggi di default se non è chiuso
+    if (!isGiornoChiuso(oggi)) giornoSel = oggi;
+    buildCalendario();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
