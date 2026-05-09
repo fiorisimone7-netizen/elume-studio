@@ -376,11 +376,10 @@
 <div id="toast"></div>
 
 <script>
-  // ---- CONFIG ----
-  const MASTER_KEY = '$2a$10$y1KUAmvnehD9qUBS8L4.oePQb4uoVX1vL4vI0VTXdN36sTRKLoqH2';
-  const ACCESS_KEY = '$2a$10$IWpYKf7f5zw97Fztg3dfoeK2.rZXOgt77SA7joMrZnuoEXzArQql6';
-  const BIN_ID     = '69fed779adc21f119a74f135';
-  const BIN_URL    = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+  // ---- CONFIG SUPABASE ----
+  const SB_URL = 'https://hteopuanhychwuqysckl.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0ZW9wdWFuaHljaHd1cXlzY2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMTM2NjUsImV4cCI6MjA5Mzg4OTY2NX0.LEo3tiZWrCOexDaa1sW4-0mOGZe3i00vUrWzzpa_EBc';
+  const CID    = 1; // ID parrucchiere
 
   const SLOT_ORARI = [
     '09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30',
@@ -388,16 +387,33 @@
   ];
   const GIORNI_NOMI = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
 
-  let datiSalone   = null;
-  let calOffset    = 0;
-  let giornoSel    = null;
-  let slotSel      = null;
-  let oggi         = dateStr(new Date());
+  let appuntamenti  = [];
+  let chiusureStd   = [0, 1];
+  let chiusureEcc   = [];
+  let calOffset     = 0;
+  let giornoSel     = null;
+  let slotSel       = null;
+  let oggi          = dateStr(new Date());
 
   function dateStr(d) { return d.toISOString().split('T')[0]; }
   function fmtDataLong(ds) {
     const d = new Date(ds + 'T12:00:00');
     return d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+
+  const H = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+
+  async function sbGet(table, params) {
+    const r = await fetch(SB_URL + '/rest/v1/' + table + '?' + (params||''), { headers: H });
+    return await r.json();
+  }
+  async function sbInsert(table, data) {
+    const r = await fetch(SB_URL + '/rest/v1/' + table, {
+      method: 'POST',
+      headers: { ...H, 'Prefer': 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    return await r.json();
   }
 
   let toastTimer;
@@ -409,50 +425,31 @@
     toastTimer = setTimeout(() => { t.className = ''; }, 3000);
   }
 
-  // ---- LEGGI DATI ----
-  async function caricaDati() {
-    try {
-      const res  = await fetch(BIN_URL + '/latest', { headers: { 'X-Master-Key': MASTER_KEY, 'X-Access-Key': ACCESS_KEY } });
-      const json = await res.json();
-      datiSalone = json.record || {};
-    } catch(e) {
-      datiSalone = {};
-    }
-  }
-
   // ---- CHIUSURE ----
   function isGiornoChiuso(ds) {
-    if (!datiSalone) return false;
-    const ch = datiSalone.chiusure || { giorni_standard: [0, 1], eccezionali: [] };
-    const d   = new Date(ds + 'T12:00:00');
-    if (ch.giorni_standard.includes(d.getDay())) return true;
-    for (const c of (ch.eccezionali || [])) {
+    const d = new Date(ds + 'T12:00:00');
+    if (chiusureStd.includes(d.getDay())) return true;
+    for (const c of chiusureEcc) {
       if ((c.tipo === 'giorno' || c.tipo === 'periodo') && ds >= c.dal && ds <= c.al) return true;
     }
     return false;
   }
-
   function isFasciaChiusa(ds, fascia) {
-    if (!datiSalone) return false;
-    const ch = datiSalone.chiusure || {};
-    for (const c of (ch.eccezionali || [])) {
+    for (const c of chiusureEcc) {
       if (c.tipo === fascia && ds >= c.dal && ds <= c.al) return true;
     }
     return false;
   }
-
   function isSlotChiuso(ds, ora) {
     if (isGiornoChiuso(ds)) return true;
     if (ora < '13:00' && isFasciaChiusa(ds, 'mattina'))    return true;
     if (ora >= '14:00' && isFasciaChiusa(ds, 'pomeriggio')) return true;
     return false;
   }
-
   function isSlotOccupato(ds, ora) {
-    if (!datiSalone || !datiSalone.appuntamenti) return false;
-    return datiSalone.appuntamenti.some(a => {
+    return appuntamenti.some(a => {
       if (a.data !== ds) return false;
-      const startIdx = SLOT_ORARI.indexOf(a.oraInizio);
+      const startIdx = SLOT_ORARI.indexOf(a.ora_inizio);
       const slots    = Math.ceil((a.durata || 60) / 30);
       const oraIdx   = SLOT_ORARI.indexOf(ora);
       return oraIdx >= startIdx && oraIdx < startIdx + slots;
@@ -461,41 +458,32 @@
 
   // ---- CALENDARIO ----
   function getLunedi(offset) {
-    const d   = new Date();
-    const day = d.getDay();
+    const d = new Date(), day = d.getDay();
     d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day) + offset * 7);
     d.setHours(0,0,0,0);
     return d;
   }
-
   function cambiaSettimana(dir) {
-    // Non permettere di andare nel passato
     if (dir === -1 && calOffset === 0) return;
-    calOffset += dir;
-    giornoSel = null;
-    slotSel   = null;
-    nascondiform();
-    buildCalendario();
+    calOffset += dir; giornoSel = null; slotSel = null;
+    nascondiform(); buildCalendario();
   }
-
   function buildCalendario() {
-    const lun = getLunedi(calOffset);
-    const dom = new Date(lun); dom.setDate(dom.getDate() + 6);
+    const lun = getLunedi(calOffset), dom = new Date(lun);
+    dom.setDate(dom.getDate() + 6);
     const opts = { day:'numeric', month:'short' };
     document.getElementById('cal-week-range').textContent =
       lun.toLocaleDateString('it-IT', opts) + ' – ' + dom.toLocaleDateString('it-IT', opts);
-
-    // Week strip
     let stripHtml = '';
     for (let i = 0; i < 7; i++) {
-      const d  = new Date(lun); d.setDate(d.getDate() + i);
+      const d = new Date(lun); d.setDate(d.getDate() + i);
       const ds = dateStr(d);
       const isChiuso  = isGiornoChiuso(ds);
       const isPassato = ds < oggi;
       const isToday   = ds === oggi;
       const isSel     = ds === giornoSel;
       let cls = 'week-day';
-      if (isSel)     cls += ' active';
+      if (isSel)          cls += ' active';
       else if (isChiuso)  cls += ' chiuso';
       else if (isPassato) cls += ' passato';
       else if (isToday)   cls += ' today';
@@ -507,38 +495,25 @@
         '</div>';
     }
     document.getElementById('week-strip').innerHTML = stripHtml;
-
-    // Slots
     if (giornoSel) buildSlots();
     else document.getElementById('slots-section').innerHTML = '<div class="slot-loading">👆 Seleziona un giorno per vedere gli orari disponibili</div>';
   }
-
   function selGiorno(ds) {
-    giornoSel = ds;
-    slotSel   = null;
-    nascondiform();
-    buildCalendario();
+    giornoSel = ds; slotSel = null; nascondiform(); buildCalendario();
     document.getElementById('prenota').scrollIntoView({ behavior:'smooth', block:'nearest' });
   }
-
   function buildSlots() {
-    const d       = new Date(giornoSel + 'T12:00:00');
-    const label   = d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long' });
+    const d = new Date(giornoSel + 'T12:00:00');
+    const label = d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long' });
     const mattina = SLOT_ORARI.filter(s => s < '13:00');
     const pome    = SLOT_ORARI.filter(s => s >= '14:00');
-    const chiusoMat  = isFasciaChiusa(giornoSel, 'mattina');
-    const chiusoPome = isFasciaChiusa(giornoSel, 'pomeriggio');
-
     let html = '<div class="slots-day-label">📅 ' + label + '</div><div class="slots-grid">';
-
     mattina.forEach(ora => { html += buildSlotBtn(ora); });
     html += '<div class="pausa-label">☕ Pausa pranzo 13:00 – 14:00</div>';
     pome.forEach(ora => { html += buildSlotBtn(ora); });
-
     html += '</div>';
     document.getElementById('slots-section').innerHTML = html;
   }
-
   function buildSlotBtn(ora) {
     const chiuso   = isSlotChiuso(giornoSel, ora);
     const occupato = !chiuso && isSlotOccupato(giornoSel, ora);
@@ -546,7 +521,6 @@
     if (occupato) return '<div class="slot-btn occupato">Occupato</div>';
     return '<div class="slot-btn libero" onclick="selSlot(\'' + ora + '\')">' + ora + '</div>';
   }
-
   function selSlot(ora) {
     slotSel = ora;
     const d = new Date(giornoSel + 'T12:00:00');
@@ -557,72 +531,51 @@
     document.getElementById('booking-success').classList.remove('show');
     document.getElementById('booking-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
   }
-
   function nascondiform() {
     document.getElementById('booking-form').classList.remove('show');
     document.getElementById('booking-success').classList.remove('show');
   }
+  function annullaForm() { slotSel = null; nascondiform(); }
 
-  function annullaForm() {
-    slotSel = null;
-    nascondiform();
-  }
-
-  // ---- INVIA PRENOTAZIONE ----
+  // ---- INVIA PRENOTAZIONE SU SUPABASE ----
   async function inviaPrenotazione() {
     const nome     = document.getElementById('f-nome').value.trim();
     const cognome  = document.getElementById('f-cognome').value.trim();
     const tel      = document.getElementById('f-tel').value.trim();
     const servizio = document.getElementById('f-servizio').value;
     const note     = document.getElementById('f-note').value.trim();
-
     if (!nome || !cognome || !tel) { showToast('Compila nome, cognome e telefono', 'err'); return; }
     if (!giornoSel || !slotSel)    { showToast('Seleziona un giorno e un orario', 'err'); return; }
+    const cliente = nome + ' ' + cognome;
 
-    const cliente  = nome + ' ' + cognome;
-    const durata   = 60; // default 1h per prenotazioni online
-
-    // Salva appuntamento su JSONbin
     try {
-      await caricaDati(); // rilegge per avere dati freschi
-      const appuntamenti = datiSalone.appuntamenti || [];
-
-      // Verifica che lo slot sia ancora libero (potrebbe essere stato preso nel frattempo)
-      const ancoraLibero = !isSlotOccupato(giornoSel, slotSel);
-      if (!ancoraLibero) {
+      // Ricarica appuntamenti freschi per evitare doppie prenotazioni
+      appuntamenti = await sbGet('appuntamenti', 'commerciante_id=eq.' + CID + '&data=eq.' + giornoSel);
+      if (isSlotOccupato(giornoSel, slotSel)) {
         showToast('Questo slot è stato appena prenotato. Scegline un altro.', 'err');
-        buildSlots();
-        return;
+        buildSlots(); return;
       }
 
-      const nuovoAppt = {
-        id:         (appuntamenti.length > 0 ? Math.max(...appuntamenti.map(a => a.id)) + 1 : 1),
+      const nuovi = await sbInsert('appuntamenti', {
+        commerciante_id: CID,
         data:       giornoSel,
         cliente,
         telefono:   tel,
         servizio:   servizio || 'Da definire',
-        oraInizio:  slotSel,
-        durata,
+        ora_inizio: slotSel,
+        durata:     60,
         note,
-        daOnline:   true,
-        creato:     new Date().toISOString()
-      };
-      appuntamenti.push(nuovoAppt);
-      datiSalone.appuntamenti = appuntamenti;
-
-      await fetch(BIN_URL, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY, 'X-Access-Key': ACCESS_KEY },
-        body: JSON.stringify(datiSalone)
+        da_online:  true
       });
 
+      if (!nuovi || nuovi.error) throw new Error('Errore salvataggio');
+      appuntamenti.push(nuovi[0]);
+
       // Mostra success
-      const d = new Date(giornoSel + 'T12:00:00');
-      const dataLabel = d.toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
       document.getElementById('success-detail').innerHTML =
         '<div class="sd-row"><span class="sd-label">Nome</span><span class="sd-value">' + cliente + '</span></div>' +
         '<div class="sd-row"><span class="sd-label">Telefono</span><span class="sd-value">' + tel + '</span></div>' +
-        '<div class="sd-row"><span class="sd-label">Data</span><span class="sd-value">' + dataLabel + '</span></div>' +
+        '<div class="sd-row"><span class="sd-label">Data</span><span class="sd-value">' + fmtDataLong(giornoSel) + '</span></div>' +
         '<div class="sd-row"><span class="sd-label">Orario</span><span class="sd-value">' + slotSel + '</span></div>' +
         (servizio ? '<div class="sd-row"><span class="sd-label">Servizio</span><span class="sd-value">' + servizio + '</span></div>' : '') +
         (note ? '<div class="sd-row"><span class="sd-label">Note</span><span class="sd-value">' + note + '</span></div>' : '');
@@ -630,8 +583,6 @@
       document.getElementById('booking-form').classList.remove('show');
       document.getElementById('booking-success').classList.add('show');
       document.getElementById('booking-success').scrollIntoView({ behavior:'smooth', block:'nearest' });
-
-      // Reset form
       ['f-nome','f-cognome','f-tel','f-note'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('f-servizio').value = '';
 
@@ -641,22 +592,33 @@
   }
 
   function nuovaPrenotazione() {
-    giornoSel = null;
-    slotSel   = null;
-    nascondiform();
-    caricaDati().then(() => buildCalendario());
+    giornoSel = null; slotSel = null; nascondiform();
+    init().then(() => buildCalendario());
     document.getElementById('prenota').scrollIntoView({ behavior:'smooth' });
   }
 
   // ---- INIT ----
   async function init() {
-    await caricaDati();
-    // Seleziona oggi di default se non è chiuso
-    if (!isGiornoChiuso(oggi)) giornoSel = oggi;
-    buildCalendario();
+    try {
+      // Carica appuntamenti futuri
+      appuntamenti = await sbGet('appuntamenti',
+        'commerciante_id=eq.' + CID + '&data=gte.' + oggi + '&order=data,ora_inizio');
+      // Carica chiusure standard
+      const cs = await sbGet('chiusure_standard', 'commerciante_id=eq.' + CID);
+      chiusureStd = cs.map(c => c.giorno_settimana);
+      // Carica chiusure eccezionali future
+      chiusureEcc = await sbGet('chiusure',
+        'commerciante_id=eq.' + CID + '&al=gte.' + oggi + '&order=dal');
+    } catch(e) {
+      console.error('Errore caricamento dati:', e);
+    }
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', async () => {
+    await init();
+    if (!isGiornoChiuso(oggi)) giornoSel = oggi;
+    buildCalendario();
+  });
 </script>
 </body>
 </html>
